@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seguroscba Respuestas</title>
+<meta name="theme-color" content="#0B4F8A">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Seguroscba">
+<style>
+:root{
+  --bg:#F3F5F8; --card:#FFFFFF; --ink:#16202B; --muted:#5B6878; --line:#DCE2EA;
+  --brand:#0B4F8A; --brand-soft:#E3EEF8; --ok:#1FA855; --wa:#25D366;
+  --ph-bg:#FFF2C6; --ph-ink:#7A5600; --ph-line:#E2B93B; --fill-bg:#DDF3E5; --fill-ink:#13612F;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0F151C; --card:#18212B; --ink:#E8EDF3; --muted:#9AA7B6; --line:#2A3542;
+    --brand:#5AA6E8; --brand-soft:#1B2D40; --ph-bg:#3A3112; --ph-ink:#F2D27A; --ph-line:#8A6F20;
+    --fill-bg:#16351F; --fill-ink:#8FE0AA; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+header{position:sticky;top:0;z-index:5;background:#0B4F8A;color:#fff;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 12px;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.top{display:flex;align-items:center;gap:10px}
+.top img{width:34px;height:34px;border-radius:8px}
+.top h1{font-size:18px;margin:0;line-height:1.1}
+.top small{display:block;font-weight:400;opacity:.85;font-size:13px}
+.fields{display:flex;gap:8px;margin-top:10px}
+.fld{position:relative;flex:1;min-width:0}
+.fld.cli{flex:0 0 42%}
+.fld input{width:100%;border:0;border-radius:10px;padding:11px 34px 11px 12px;font-size:16px;background:#fff;color:#16202B;outline:none}
+.fld.cli input{background:#FFF2C6;font-weight:600}
+.fld button{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:none;
+  font-size:18px;color:#5B6878;padding:4px 8px;display:none}
+main{max-width:760px;margin:0 auto;padding:14px 16px 90px}
+details.rama{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+details.sub{border-top:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:10px;font-weight:650;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary .chev{margin-left:auto;transition:transform .2s;color:var(--muted);font-size:20px}
+details[open]>summary .chev{transform:rotate(90deg)}
+details.rama>summary{font-size:17px;letter-spacing:.3px}
+details.sub>summary{font-size:15.5px;background:var(--brand-soft)}
+details.sub details.sub>summary{background:transparent;padding-left:28px;font-weight:600}
+.count{font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);border-radius:20px;padding:2px 8px}
+.resp{padding:12px 16px 14px;border-top:1px solid var(--line)}
+.rhead{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.rhead h3{margin:0;font-size:14.5px;color:var(--brand);flex:1}
+.ver{font-size:12px;color:var(--muted);white-space:nowrap}
+.path{font-size:12px;color:var(--muted);margin:-2px 0 6px}
+.txt{white-space:pre-wrap;font-size:15px;background:var(--bg);border-radius:10px;padding:12px;margin:0;word-break:break-word;
+  transition:opacity .18s}
+.txt.fade{opacity:0}
+.ph{font:inherit;font-weight:600;border:0;border-bottom:2px dashed var(--ph-line);border-radius:5px 5px 0 0;
+  background:var(--ph-bg);color:var(--ph-ink);padding:1px 4px;margin:0 1px;max-width:100%;outline:none;vertical-align:baseline}
+.ph::placeholder{color:var(--ph-ink);opacity:.75}
+.ph.filled{background:var(--fill-bg);color:var(--fill-ink);border-bottom-color:transparent}
+.ph:focus{box-shadow:0 0 0 2px var(--brand)}
+.acts{display:flex;gap:8px;margin-top:10px}
+.acts button{border:0;border-radius:10px;padding:11px 10px;font-size:15px;font-weight:650;cursor:pointer}
+.b-new{flex:0 0 auto;background:var(--brand-soft);color:var(--brand)}
+.b-copy{flex:1;background:var(--brand);color:#fff}
+.b-wa{flex:1;background:var(--wa);color:#08361c}
+.b-copy.done{background:var(--ok)}
+.empty{padding:30px 10px;text-align:center;color:var(--muted)}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(140px);
+  background:#16202B;color:#fff;padding:10px 18px;border-radius:24px;font-weight:600;transition:transform .25s;z-index:9;
+  max-width:calc(100% - 32px);text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+a.ia{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff;background:linear-gradient(135deg,#0B4F8A,#1268B3);
+  border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(11,79,138,.25)}
+a.ia .ic{font-size:26px;line-height:1}
+a.ia b{display:block;font-size:16.5px}
+a.ia span.t{font-size:13.5px;opacity:.9}
+a.ia .go{margin-left:auto;font-size:22px;opacity:.9}
+footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:20px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <img src="icon-192.png" alt="">
+    <h1>Seguroscba<small>Respuestas para WhatsApp</small></h1>
+  </div>
+  <div class="fields">
+    <div class="fld cli">
+      <input id="cli" type="text" placeholder="👤 Cliente" autocomplete="off" autocapitalize="words">
+      <button data-clear="cli" aria-label="Borrar cliente">✕</button>
+    </div>
+    <div class="fld">
+      <input id="q" type="search" placeholder="🔎 Buscar…" autocomplete="off">
+      <button data-clear="q" aria-label="Borrar búsqueda">✕</button>
+    </div>
+  </div>
+</header>
+<main id="app"></main>
+<div id="toast"></div>
+
+<script src="respuestas.js"></script>
+<script>
+const ASISTENTE_URL='asistente.html';
+const IA_HTML=`<a class="ia" href="${ASISTENTE_URL}"><span class="ic">🤖</span><span><b>Asistente IA</b><span class="t">Pegá el chat del cliente y te armo la respuesta</span></span><span class="go">›</span></a>`;
+const app=document.getElementById('app'), q=document.getElementById('q'), cli=document.getElementById('cli'), toast=document.getElementById('toast');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const count=n=>(n.respuestas||[]).length+(n.sub||[]).reduce((a,s)=>a+count(s),0);
+
+/* Registro de todas las respuestas, con id fijo */
+const REG=[];
+(function walk(nodes,path){nodes.forEach(n=>{
+  (n.respuestas||[]).forEach(r=>{r.id=REG.length;r.path=[...path,n.titulo].join(' › ');r.v=0;r.vals={};REG.push(r);});
+  walk(n.sub||[],[...path,n.titulo]);
+});})(RAMAS,[]);
+
+/* Valores editados por respuesta (se conservan al cambiar de versión) */
+function phHTML(r,label){
+  const isName=label==='NOMBRE';
+  const val=(r.vals[label]!==undefined)?r.vals[label]:(isName?cli.value.trim():'');
+  return `<input class="ph${val?' filled':''}" data-ph="${esc(label)}" value="${esc(val)}" placeholder="${esc(label)}" style="width:${w(label,val)}" autocomplete="off" ${isName?'autocapitalize="words"':''}>`;
+}
+function bodyHTML(r){
+  const t=r.textos[r.v];
+  return t.split(/(\[[^\]]+\])/).map(p=>{const m=p.match(/^\[([^\]]+)\]$/);return m?phHTML(r,m[1]):esc(p);}).join('');
+}
+function respHTML(r,showPath){
+  const n=r.textos.length;
+  return `<div class="resp" data-id="${r.id}">${showPath?`<div class="path">${esc(r.path)}</div>`:''}
+  <div class="rhead"><h3>${esc(r.titulo)}</h3><span class="ver">${n>1?`Versión ${r.v+1}/${n}`:''}</span></div>
+  <div class="txt">${bodyHTML(r)}</div>
+  <div class="acts">${n>1?'<button class="b-new" aria-label="Otra versión">🔄 Otra</button>':''}<button class="b-copy">📋 Copiar</button><button class="b-wa">WhatsApp</button></div></div>`;
+}
+function nodeHTML(n,lvl){
+  return `<details class="${lvl?'sub':'rama'}"><summary>${n.icono?n.icono+' ':''}${esc(n.titulo)} <span class="count">${count(n)}</span><span class="chev">›</span></summary>
+  ${(n.respuestas||[]).map(r=>respHTML(r)).join('')}${(n.sub||[]).map(s=>nodeHTML(s,lvl+1)).join('')}</details>`;
+}
+function render(){
+  const t=norm(q.value.trim());
+  document.querySelector('[data-clear=q]').style.display=t?'block':'none';
+  if(!t){app.innerHTML=IA_HTML+RAMAS.map(n=>nodeHTML(n,0)).join('')+`<footer>${esc(FIRMA)} · Lun a Vie 8:30 a 18 hs</footer>`;return;}
+  const hits=REG.filter(r=>norm(r.path+' '+r.titulo+' '+r.textos.join(' ')).includes(t));
+  app.innerHTML=hits.length?`<details class="rama" open><summary>🔎 ${hits.length} resultado${hits.length>1?'s':''}<span class="chev">›</span></summary>${hits.map(r=>respHTML(r,true)).join('')}</details>`
+    :`<div class="empty">No encontré respuestas con “${esc(q.value)}”.</div>`;
+}
+
+/* Arma el texto final: completa casilleros; si NOMBRE está vacío lo quita prolijamente */
+function finalText(box){
+  let s=''; box.childNodes.forEach(nd=>{
+    if(nd.nodeType===3) s+=nd.textContent;
+    else if(nd.classList&&nd.classList.contains('ph')){const v=nd.value.trim(); s+=v?v:`[${nd.dataset.ph}]`;}
+  });
+  s=s.replace(/ \[NOMBRE\]/g,'').replace(/^\[NOMBRE\], (.)/gm,(m,c)=>c.toUpperCase()).replace(/\[NOMBRE\]/g,'');
+  const missing=[...new Set((s.match(/\[[^\]]+\]/g)||[]))];
+  return {s,missing};
+}
+
+/* Campo Cliente: completa el nombre en todas las respuestas que no lo tengan editado a mano */
+cli.addEventListener('input',()=>{
+  document.querySelector('[data-clear=cli]').style.display=cli.value?'block':'none';
+  const v=cli.value.trim();
+  document.querySelectorAll('.ph[data-ph="NOMBRE"]').forEach(inp=>{
+    const r=REG[inp.closest('.resp').dataset.id];
+    if(r.vals.NOMBRE===undefined){inp.value=v;fit(inp);}
+  });
+});
+function w(label,val){return (Math.max(val?0:label.length*0.68,val.length*0.6)+1).toFixed(1)+'em';}
+function fit(inp){inp.style.width=w(inp.dataset.ph,inp.value);inp.classList.toggle('filled',!!inp.value.trim());}
+
+/* Edición en un casillero */
+app.addEventListener('input',e=>{
+  const inp=e.target; if(!inp.classList.contains('ph'))return;
+  const box=inp.closest('.resp'), r=REG[box.dataset.id];
+  r.vals[inp.dataset.ph]=inp.value;
+  box.querySelectorAll(`.ph[data-ph="${CSS.escape(inp.dataset.ph)}"]`).forEach(o=>{if(o!==inp)o.value=inp.value;fit(o);});
+  fit(inp);
+});
+/* Enter en un casillero pasa al siguiente */
+app.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||!e.target.classList.contains('ph'))return;
+  e.preventDefault(); const all=[...e.target.closest('.resp').querySelectorAll('.ph')];
+  const nx=all[all.indexOf(e.target)+1]; nx?nx.focus():e.target.blur();
+});
+
+function showToast(m){toast.textContent=m;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),2200);}
+async function copy(text){
+  try{await navigator.clipboard.writeText(text);return true;}catch(e){
+    const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+    let ok=false;try{ok=document.execCommand('copy');}catch(_){}ta.remove();return ok;}
+}
+app.addEventListener('click',async e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  const box=b.closest('.resp'), r=REG[box.dataset.id], txt=box.querySelector('.txt');
+  if(b.classList.contains('b-new')){
+    let nv; do{nv=Math.floor(Math.random()*r.textos.length);}while(nv===r.v && r.textos.length>1);
+    r.v=nv; txt.classList.add('fade');
+    setTimeout(()=>{txt.innerHTML=bodyHTML(r);box.querySelector('.ver').textContent=`Versión ${r.v+1}/${r.textos.length}`;txt.classList.remove('fade');},180);
+    return;
+  }
+  const {s,missing}=finalText(txt);
+  const warn=missing.length?` · Falta completar ${missing.join(', ')}`:'';
+  if(b.classList.contains('b-copy')){
+    const ok=await copy(s);
+    showToast(ok?'Copiado ✓'+(warn||' Pegalo en WhatsApp'):'No se pudo copiar');
+    if(ok){b.classList.add('done');b.textContent='✓ Copiado';setTimeout(()=>{b.classList.remove('done');b.textContent='📋 Copiar';},1500);}
+  }else if(b.classList.contains('b-wa')){
+    if(warn) showToast(warn.slice(3));
+    window.open('https://wa.me/?text='+encodeURIComponent(s),'_blank');
+  }
+});
+
+document.querySelectorAll('[data-clear]').forEach(b=>b.onclick=()=>{
+  const i=document.getElementById(b.dataset.clear); i.value=''; i.dispatchEvent(new Event('input')); i.focus();
+});
+q.addEventListener('input',render);
+render();
+if('serviceWorker' in navigator && location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Asistente Seguroscba</title>
+<meta name="theme-color" content="#0B4F8A">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Seguroscba">
+<style>
+:root{
+  --bg:#EEF2F6; --card:#FFFFFF; --ink:#13202D; --muted:#5A6B7D; --line:#D6DEE7;
+  --brand:#0B4F8A; --brand-ink:#FFFFFF; --brand-soft:#E1ECF7; --wa:#25D366; --wa-ink:#07351B;
+  --ok:#1C9E50; --warn-bg:#FFF4D1; --warn-ink:#6E5000; --err-bg:#FDE7E7; --err-ink:#8A1C1C; --field:#F6F8FB;
+}
+@media (prefers-color-scheme: dark){ :root{
+  --bg:#0D141B; --card:#16202A; --ink:#E6ECF2; --muted:#93A3B4; --line:#273443;
+  --brand:#5BA7E9; --brand-ink:#06223A; --brand-soft:#17293B;
+  --ok:#3FCB78; --warn-bg:#3A3013; --warn-ink:#F0D27E; --err-bg:#3B1A1A; --err-ink:#F3A9A9; --field:#101921; color-scheme:dark }}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+header{position:sticky;top:0;z-index:5;background:#0B4F8A;color:#fff;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;
+  display:flex;align-items:center;gap:8px;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+header a,header button{color:#fff;text-decoration:none;background:none;border:0;font-size:24px;padding:4px 8px;cursor:pointer;line-height:1}
+header h1{margin:0;font-size:17px;flex:1;line-height:1.15}
+header small{display:block;font-weight:400;opacity:.85;font-size:12.5px}
+.wrap{max-width:680px;margin:0 auto;padding:14px 16px 40px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:8px}
+textarea,input,select{width:100%;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px;outline:none}
+textarea{resize:vertical}
+textarea:focus,input:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+#chat{min-height:150px}
+#out{min-height:200px;font-size:15.5px;background:var(--card)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:999px;padding:7px 12px;font-weight:600;font-size:14px;font-family:inherit;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.chip:disabled{opacity:.5}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{flex:1 1 auto;border:0;border-radius:12px;padding:13px 14px;font-weight:700;font-size:15.5px;font-family:inherit;cursor:pointer;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:disabled{opacity:.55;cursor:default}
+.primary{background:var(--brand);color:var(--brand-ink)}
+.full{width:100%}
+.soft{background:var(--brand-soft);color:var(--brand)}
+.wa{background:var(--wa);color:var(--wa-ink)}
+.danger{background:var(--err-bg);color:var(--err-ink)}
+.copied{background:var(--ok)!important;color:#fff!important}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumb{position:relative;width:64px;height:64px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb button{position:absolute;top:2px;right:2px;border:0;border-radius:50%;width:22px;height:22px;background:rgba(0,0,0,.65);color:#fff;font-size:13px;cursor:pointer;line-height:1}
+.attach{border:1.5px dashed var(--line);background:transparent;color:var(--muted);border-radius:12px;padding:10px;font-weight:600;font-size:14px;font-family:inherit;cursor:pointer}
+.note{background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:10px 12px;font-size:14px}
+.err{background:var(--err-bg);color:var(--err-ink);border-radius:12px;padding:10px 12px;font-size:14px}
+.status{font-size:13.5px;color:var(--muted);min-height:1.2em}
+.linkbtn{background:none;border:0;color:var(--brand);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;padding:0}
+.steps{margin:0;padding-left:20px;font-size:14.5px;display:flex;flex-direction:column;gap:6px}
+.steps a{color:var(--brand);font-weight:600}
+.small{font-size:13px;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+<header>
+  <a href="./" aria-label="Volver a respuestas">‹</a>
+  <h1>Asistente IA<small>Pegá el chat y te armo la respuesta</small></h1>
+  <button id="cfgBtn" aria-label="Configuración">⚙️</button>
+</header>
+
+<div class="wrap">
+
+  <!-- Configuración (se muestra la primera vez o desde ⚙️) -->
+  <section class="card" id="cfg" hidden>
+    <div class="lbl">Configuración (una sola vez)</div>
+    <ol class="steps">
+      <li>Entrá a <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> y creá tu cuenta.</li>
+      <li>En <b>Billing</b> cargá crédito (desde 5 USD). Te recomiendo poner un límite de gasto mensual.</li>
+      <li>En <b>API Keys</b> tocá <b>Create Key</b>, copiá la clave (empieza con <code>sk-ant-</code>) y pegala acá.</li>
+    </ol>
+    <input id="key" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+    <label class="lbl" for="model" style="margin-top:4px">Modelo</label>
+    <select id="model">
+      <option value="claude-sonnet-5-5">Sonnet: mejor redacción (recomendado)</option>
+      <option value="claude-haiku-5-5">Haiku: más rápido y más barato</option>
+    </select>
+    <div class="row">
+      <button class="btn primary" id="saveKey" type="button">Guardar</button>
+      <button class="btn danger" id="delKey" type="button" hidden>Borrar clave</button>
+    </div>
+    <p class="small">La clave queda guardada solo en este celular. No se sube a internet ni a GitHub.</p>
+    <div class="status" id="cfgStatus"></div>
+  </section>
+
+  <section class="card">
+    <div class="lbl"><label for="chat">1 · Conversación con el cliente</label><button class="linkbtn" id="clear" type="button">Limpiar</button></div>
+    <textarea id="chat" placeholder="Pegá acá el chat de WhatsApp (mantené apretado en el mensaje → Copiar). Ejemplo:
+
+Cliente: Hola, cuánto me sale asegurar un Gol Trend 2015?
+Yo: Hola! Pasame código postal y si tiene GNC
+Cliente: 5000, no tiene. Pero en otro lado me pasaron más barato"></textarea>
+    <div class="thumbs" id="thumbs"></div>
+    <input type="file" id="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+    <button class="attach" id="attach" type="button">📷 Adjuntar captura del chat</button>
+  </section>
+
+  <section class="card">
+    <div class="lbl">2 · Situación (opcional)</div>
+    <div class="chips" id="sit">
+      <button class="chip" type="button" aria-pressed="false">Cliente nuevo</button>
+      <button class="chip" type="button" aria-pressed="false">Presupuesto</button>
+      <button class="chip" type="button" aria-pressed="false">Objeción de precio</button>
+      <button class="chip" type="button" aria-pressed="false">Seguimiento</button>
+      <button class="chip" type="button" aria-pressed="false">Siniestro</button>
+      <button class="chip" type="button" aria-pressed="false">Fotos inspección</button>
+      <button class="chip" type="button" aria-pressed="false">Cliente enojado</button>
+    </div>
+    <input type="text" id="extra" placeholder="Indicación extra: ej. ofrecele Sancor y Rivadavia…">
+    <button class="btn primary full" id="gen" type="button">✨ Generar respuesta</button>
+    <div class="status" id="status" aria-live="polite"></div>
+  </section>
+
+  <section class="card" id="resCard" hidden>
+    <div class="lbl"><label for="out">3 · Respuesta (podés editarla)</label></div>
+    <textarea id="out" spellcheck="true"></textarea>
+    <div class="note" id="note" hidden></div>
+    <div class="chips" id="tweaks">
+      <button class="chip" type="button" data-t="Hacela más corta.">Más corta</button>
+      <button class="chip" type="button" data-t="Hacela más cálida y empática.">Más cálida</button>
+      <button class="chip" type="button" data-t="Hacela más directa y orientada a cerrar la venta, sin sonar agresivo.">Más vendedora</button>
+      <button class="chip" type="button" data-t="Tratá al cliente de usted, con tono más formal.">De usted</button>
+      <button class="chip" type="button" data-t="Usá menos emojis o ninguno.">Sin emojis</button>
+    </div>
+    <div class="row">
+      <button class="btn soft" id="again" type="button">🔄 Otra versión</button>
+      <button class="btn primary" id="copy" type="button">📋 Copiar</button>
+    </div>
+    <a class="btn wa full" id="wa" href="https://wa.me/" target="_blank" rel="noopener">Abrir en WhatsApp</a>
+  </section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const chat=$('chat'), extra=$('extra'), gen=$('gen'), status=$('status'), out=$('out'), note=$('note'),
+      resCard=$('resCard'), again=$('again'), copyBtn=$('copy'), wa=$('wa'), cfg=$('cfg');
+let imgs=[], ctl=null;
+const MAX_IMGS=4;
+
+/* ---------- Clave y modelo (guardados solo en este dispositivo) ---------- */
+const store={get:k=>{try{return localStorage.getItem(k)||''}catch(_){return ''}},
+             set:(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}},
+             del:k=>{try{localStorage.removeItem(k)}catch(_){}}};
+function refreshCfg(){
+  const has=!!store.get('scba_key');
+  $('delKey').hidden=!has; $('key').value=''; $('key').placeholder=has?'Clave guardada ✓ (pegá otra para cambiarla)':'sk-ant-...';
+  $('model').value=store.get('scba_model')||'claude-sonnet-5-5';
+  if(!has) cfg.hidden=false;
+}
+$('cfgBtn').onclick=()=>{cfg.hidden=!cfg.hidden; if(!cfg.hidden) cfg.scrollIntoView({behavior:'smooth'});};
+$('saveKey').onclick=()=>{
+  const k=$('key').value.trim();
+  if(k){ if(!k.startsWith('sk-ant-')){$('cfgStatus').textContent='La clave debería empezar con sk-ant-. Revisá que la copiaste completa.';return;} store.set('scba_key',k); }
+  else if(!store.get('scba_key')){$('cfgStatus').textContent='Pegá tu clave para continuar.';return;}
+  store.set('scba_model',$('model').value);
+  $('cfgStatus').textContent=''; refreshCfg(); cfg.hidden=true; status.textContent='Configuración guardada. ¡Ya podés generar respuestas!';
+};
+$('delKey').onclick=()=>{store.del('scba_key'); refreshCfg(); $('cfgStatus').textContent='Clave borrada de este celular.';};
+
+/* ---------- Instrucciones del asistente ---------- */
+const REGLAS=`Sos el asistente de Gustavo Correa, Productor Asesor de Seguros (PAS) matriculado, agencia Seguroscba, Córdoba (Argentina). Atiende clientes de todo el país. Horario: lunes a viernes de 8:30 a 18 hs.
+Tu tarea: redactar EL PRÓXIMO MENSAJE de WhatsApp que Gustavo le va a enviar al cliente, a partir de la conversación.
+
+Tono y estilo:
+- Español de Argentina con voseo natural ("te cuento", "pasame", "no te preocupes"). Trato de vos salvo que se pida usted.
+- Profesional, cercano, empático, venta consultiva: generar confianza sin sonar agresivo.
+- Mensajes cortos y fáciles de leer en el celular: párrafos breves, viñetas (•) cuando hay listas, pocos emojis y bien puestos.
+- Formato WhatsApp: *negrita* con asteriscos. Nada de markdown (#, **, guiones de lista).
+- Saludar por el nombre si aparece en el chat. No repetir la firma salvo en el primer contacto ("Gustavo Correa – Seguroscba").
+
+Cómo trabaja Gustavo:
+- Compañías: Sancor, Federación Patronal, Mercantil Andina, Mapfre, Triunfo, Río Uruguay, San Cristóbal, Galicia, Experta, Nación Seguros, Allianz, Caruso, Norte Seguros, Zurich.
+- Ramos: autos (el principal), motos, hogar, comercio, vida, accidentes personales, bicis, celulares, tablets, caución, ART, transporte/carga, drones.
+- Planes de auto: Responsabilidad Civil, Terceros Completo, Terceros Completo Premium, Todo Riesgo con franquicia.
+- Para cotizar auto pide: marca, modelo, versión, año, si tiene GNC, código postal, uso particular/comercial y DNI. El DNI se pide con naturalidad, explicando que la compañía lo usa para aplicar descuentos según el historial.
+- Presupuestos: 2 o 3 opciones en cuota mensual. Solo recomienda una si el cliente lo pregunta. No mencionar vigencia de la cotización.
+- Medios de pago: débito por CBU, tarjeta de crédito, efectivo.
+- El precio informado es firme: NO ofrecer rebajas. Ante objeciones de precio, trabajar el valor: compara entre muchas compañías, atención personalizada, lo acompaña y gestiona los siniestros. Ofrecer comparar con la cobertura que le ofrecieron en otro lado.
+- Siniestros: el cliente avisa a Gustavo y él carga la denuncia. Recordar el plazo de 72 hs para denunciar. La carga suele hacerse en el día; si es cerca del cierre, al día hábil siguiente. Trabaja con CLEAS. Preguntar primero si hay lesionados.
+
+Límites (muy importante):
+- NUNCA inventar precios, coberturas, franquicias, plazos de pago ni datos que no estén en el chat.
+- NUNCA confirmar que un siniestro está cubierto ni prometer resultados de la compañía.
+- Si falta un dato que Gustavo debe completar (precio, compañía, número de siniestro, fecha), dejalo entre corchetes, ej: [PRECIO], [COMPAÑÍA].
+- Si hay lesionados, dudas de cobertura, rechazos, bajas, reclamos o un cliente muy enojado, la respuesta contiene y calma, y dice que Gustavo lo revisa y le confirma a la brevedad.
+
+Formato de tu salida, exactamente:
+1) Solo el texto del mensaje listo para copiar, sin comillas ni introducción.
+2) Después, en una línea aparte, la marca ---NOTA--- y una o dos frases cortas PARA GUSTAVO (no para el cliente): qué completar, qué verificar o una sugerencia. Si no hay nada importante, poné ---NOTA--- y "Lista para enviar."`;
+
+/* ---------- Situación ---------- */
+document.querySelectorAll('#sit .chip').forEach(c=>c.onclick=()=>c.setAttribute('aria-pressed',c.getAttribute('aria-pressed')==='true'?'false':'true'));
+const situ=()=>[...document.querySelectorAll('#sit .chip[aria-pressed="true"]')].map(c=>c.textContent);
+$('clear').onclick=()=>{chat.value='';extra.value='';imgs=[];drawThumbs();document.querySelectorAll('#sit .chip').forEach(c=>c.setAttribute('aria-pressed','false'));resCard.hidden=true;status.textContent='';chat.focus();};
+
+/* ---------- Capturas: se achican antes de enviar ---------- */
+function drawThumbs(){
+  const t=$('thumbs'); t.innerHTML='';
+  imgs.forEach((im,i)=>{const d=document.createElement('div');d.className='thumb';const el=document.createElement('img');el.src=im.preview;el.alt='Captura '+(i+1);
+    const x=document.createElement('button');x.type='button';x.textContent='✕';x.setAttribute('aria-label','Quitar captura');x.onclick=()=>{imgs.splice(i,1);drawThumbs();};d.append(el,x);t.append(d);});
+}
+function shrink(file){
+  return new Promise((ok,bad)=>{
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{
+      const max=1568, sc=Math.min(1,max/Math.max(img.width,img.height));
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      const data=c.toDataURL('image/jpeg',0.85); URL.revokeObjectURL(url);
+      ok({preview:data,data:data.split(',')[1],type:'image/jpeg'});
+    };
+    img.onerror=()=>bad(); img.src=url;
+  });
+}
+async function addFiles(list){
+  for(const f of list){ if(imgs.length>=MAX_IMGS)break; if(!f.type.startsWith('image/'))continue;
+    try{imgs.push(await shrink(f));}catch(_){status.textContent='No pude leer una de las imágenes.';} }
+  drawThumbs();
+}
+$('attach').onclick=()=>$('file').click();
+$('file').onchange=e=>{addFiles([...e.target.files]);e.target.value='';};
+document.addEventListener('paste',e=>{const f=[...(e.clipboardData?.files||[])].filter(x=>x.type.startsWith('image/'));if(f.length){e.preventDefault();addFiles(f);}});
+
+/* ---------- Respuesta ---------- */
+function setWA(){wa.href='https://wa.me/?text='+encodeURIComponent(out.value.trim());}
+out.addEventListener('input',setWA);
+function showText(full){
+  const i=full.indexOf('---NOTA---');
+  out.value=(i>=0?full.slice(0,i):full).trim();
+  const n=i>=0?full.slice(i+10).trim():'';
+  note.hidden=!n||/^lista para enviar\.?$/i.test(n); note.textContent='📝 '+n; setWA();
+}
+function errText(code,msg){
+  if(code===401||/authentication|api.key/i.test(msg))return 'La clave no es válida. Tocá ⚙️ y pegala de nuevo.';
+  if(/credit|billing|balance/i.test(msg))return 'No hay crédito en tu cuenta de Anthropic. Cargá saldo en console.anthropic.com (Billing).';
+  if(code===429)return 'Muchas consultas seguidas o se alcanzó el límite. Esperá un minuto y probá de nuevo.';
+  if(code===529||code>=500)return 'El servicio está saturado en este momento. Probá de nuevo en unos segundos.';
+  if(code===400&&/model/i.test(msg))return 'El modelo elegido no está disponible. Tocá ⚙️ y elegí el otro.';
+  if(code===0)return 'Sin conexión a internet. Revisá los datos o el WiFi.';
+  return 'No se pudo generar ('+(msg||code)+').';
+}
+
+async function generar(tweak){
+  const key=store.get('scba_key');
+  if(!key){cfg.hidden=false;cfg.scrollIntoView({behavior:'smooth'});status.textContent='Primero configurá tu clave.';return;}
+  const texto=chat.value.trim();
+  if(!texto&&!imgs.length){status.textContent='Pegá el chat o adjuntá una captura para empezar.';chat.focus();return;}
+  ctl?.abort(); ctl=new AbortController();
+
+  let p='=== CONVERSACIÓN ===\n'+(texto||'(ver capturas adjuntas)');
+  if(imgs.length) p+='\n\nTe adjunto '+imgs.length+' captura(s) del chat de WhatsApp: los globos de la derecha (verdes) son de Gustavo y los de la izquierda son del cliente.';
+  const s=situ(); if(s.length) p+='\n\nSituación: '+s.join(', ')+'.';
+  if(extra.value.trim()) p+='\nIndicación de Gustavo: '+extra.value.trim();
+  if(tweak&&out.value.trim()) p+='\n\nVersión anterior del mensaje:\n'+out.value.trim()+'\n\nReescribila con este cambio: '+tweak;
+  else if(tweak===null&&out.value.trim()) p+='\n\nYa propusiste este mensaje y Gustavo quiere una versión distinta (otro enfoque y otras palabras):\n'+out.value.trim();
+
+  const content=[...imgs.map(im=>({type:'image',source:{type:'base64',media_type:im.type,data:im.data}})),{type:'text',text:p}];
+  setBusy(true); status.textContent='Redactando…';
+  let full='';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', signal:ctl.signal,
+      headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:store.get('scba_model')||'claude-sonnet-5-5',max_tokens:1200,stream:true,system:REGLAS,messages:[{role:'user',content}]})
+    });
+    if(!r.ok){let m='';try{m=(await r.json())?.error?.message||'';}catch(_){}
+      throw {code:r.status,msg:m};}
+    const rd=r.body.getReader(), dec=new TextDecoder(); let buf='';
+    while(true){
+      const {done,value}=await rd.read(); if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n'); buf=lines.pop();
+      for(const ln of lines){
+        if(!ln.startsWith('data:'))continue;
+        let ev; try{ev=JSON.parse(ln.slice(5));}catch(_){continue;}
+        if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta'){full+=ev.delta.text;resCard.hidden=false;showText(full);status.textContent='Escribiendo…';}
+        else if(ev.type==='error'){throw {code:500,msg:ev.error?.message||''};}
+        else if(ev.type==='message_delta'&&ev.delta?.stop_reason==='max_tokens'){status.textContent='La respuesta quedó cortada. Pedí una versión más corta.';}
+      }
+    }
+    if(!full.trim())throw {code:-1,msg:'Respuesta vacía'};
+    showText(full);
+    if(status.textContent!=='La respuesta quedó cortada. Pedí una versión más corta.') status.textContent='Listo. Revisala, editala si querés y copiala.';
+  }catch(e){
+    if(e?.name==='AbortError'){status.textContent='';}
+    else if(e instanceof TypeError){status.textContent=errText(0,'');}
+    else{status.innerHTML='';const d=document.createElement('div');d.className='err';d.textContent=errText(e.code,e.msg||'');status.append(d);
+      if(e.code===401){cfg.hidden=false;}}
+  }finally{setBusy(false);}
+}
+function setBusy(b){gen.disabled=b;again.disabled=b;document.querySelectorAll('#tweaks .chip').forEach(c=>c.disabled=b);gen.textContent=b?'⏳ Redactando…':'✨ Generar respuesta';}
+gen.onclick=()=>generar('');
+again.onclick=()=>generar(null);
+document.querySelectorAll('#tweaks .chip').forEach(c=>c.onclick=()=>generar(c.dataset.t));
+
+copyBtn.onclick=()=>{
+  const t=out.value.trim(); if(!t)return;
+  const done=()=>{copyBtn.classList.add('copied');copyBtn.textContent='✓ Copiado';setTimeout(()=>{copyBtn.classList.remove('copied');copyBtn.textContent='📋 Copiar';},1600);};
+  if(navigator.clipboard?.writeText){navigator.clipboard.writeText(t).then(done).catch(fallback);}else fallback();
+  function fallback(){out.focus();out.select();try{document.execCommand('copy')&&done();}catch(_){status.textContent='Mantené apretado el texto y elegí Copiar.';}}
+};
+
+refreshCfg();
+if('serviceWorker' in navigator && location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+</script>
+</body>
+</html>
